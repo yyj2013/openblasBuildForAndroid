@@ -2,7 +2,6 @@
 echo "Build for Android"
 APP_ABI="android-9" 
 OUTPUT_DIR=${PWD}
-NDK_ROOT=$(locate ndk-bundle | head -1)
 echo "NDK_ROOT=$NDK_ROOT"
 PATHI=$PATH 
 if [ ! -d "OpenBLAS" ]; then  
@@ -13,18 +12,18 @@ fi
 if [ -d "OpenBLAS" ]; then
  cd OpenBLAS 
  #fix mips nan format to legacy one
-  sed -i 's/-mnan=2008//' Makefile.system
-  sed -i 's|#include <complex.h>||' kernel/arm/zdot.c
-  sed -i 's|#include <complex.h>||' kernel/mips/zdot.c
-  sed -i 's/FLOAT _Complex/OPENBLAS_COMPLEX_FLOAT/' kernel/arm/zdot.c
-  sed -i 's/FLOAT _Complex/OPENBLAS_COMPLEX_FLOAT/' kernel/mips/zdot.c
+  sed -i '' 's/-mnan=2008//' Makefile.system
+  sed -i '' 's|#include <complex.h>||' kernel/arm/zdot.c
+  sed -i '' 's|#include <complex.h>||' kernel/mips/zdot.c
+  sed -i '' 's/FLOAT _Complex/OPENBLAS_COMPLEX_FLOAT/' kernel/arm/zdot.c
+  sed -i '' 's/FLOAT _Complex/OPENBLAS_COMPLEX_FLOAT/' kernel/mips/zdot.c
 else
     echo "Could not find OpenBLAS directory"
     exit -1
 fi 
 
 if [ $1 = "all" ]; then
-architectureList=(armeabi armv7a arm64-v8a mips mips64  x86 x86_64 )
+architectureList=(armeabi armeabi-v7a arm64-v8a mips mips64  x86 x86_64 )
 else
 architectureList=("$@")
 fi
@@ -39,7 +38,7 @@ for architecture in ${architectureList[@]}; do
             CCFolder="arm-linux-androideabi-4.9" 
             CC="arm-linux-androideabi-gcc"
             ;;
-        "armv7a")
+        "armeabi-v7a")
             APP_ABI="android-9"
             target="ARMV7"
             arch="arch-arm"
@@ -66,7 +65,7 @@ for architecture in ${architectureList[@]}; do
             CCFolder="mips64el-linux-android-4.9"
             CC="mips64el-linux-android-gcc" ;;
         "x86")
-            APP_ABI="android-9"
+            APP_ABI="android-19"
             target="ATOM"
             arch="arch-x86"
             CCFolder="x86-4.9"
@@ -84,9 +83,9 @@ for architecture in ${architectureList[@]}; do
           ;;
     esac
 
-echo ${NDK_ROOT}/toolchains/${CCFolder}/prebuilt/linux-x86_64/bin
-export PATH=${NDK_ROOT}/toolchains/${CCFolder}/prebuilt/linux-x86_64/bin:${PATHI}
-command="make TARGET=${target} HOSTCC=gcc CC=${CC} USE_THREAD=0 NOFORTRAN=1 CFLAGS=--sysroot=${NDK_ROOT}/platforms/${APP_ABI}/${arch}"
+echo ${NDK_ROOT}/toolchains/${CCFolder}/prebuilt/darwin-x86_64/bin
+export PATH=${NDK_ROOT}/toolchains/${CCFolder}/prebuilt/darwin-x86_64/bin:${PATHI}
+command="make TARGET=${target} HOSTCC=gcc CC=${CC} USE_THREAD=1 NOFORTRAN=1 CFLAGS=--sysroot=${NDK_ROOT}/platforms/${APP_ABI}/${arch}"
  
 echo $command
 mkdir -p ../${architecture}
