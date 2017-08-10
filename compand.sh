@@ -85,7 +85,7 @@ for architecture in ${architectureList[@]}; do
 
 echo ${NDK_ROOT}/toolchains/${CCFolder}/prebuilt/darwin-x86_64/bin
 export PATH=${NDK_ROOT}/toolchains/${CCFolder}/prebuilt/darwin-x86_64/bin:${PATHI}
-command="make TARGET=${target} HOSTCC=gcc CC=${CC} USE_THREAD=1 NOFORTRAN=1 CFLAGS=--sysroot=${NDK_ROOT}/platforms/${APP_ABI}/${arch}"
+command="make TARGET=${target} HOSTCC=gcc CC=${CC} ARM_SOFTFP_ABI=1 USE_THREAD=0 NOFORTRAN=1 CFLAGS=--sysroot=${NDK_ROOT}/platforms/${APP_ABI}/${arch} LDLIBS=-lm"
  
 echo $command
 mkdir -p ../${architecture}
